@@ -1,7 +1,7 @@
 /*
 Author: Tyler Griggs
 Board: Arduino Pro Micro (Leonardo)
-Designed for use with Microsoft Flight Simulator 2020
+Designed for use with Microsoft Flight Simulator (MFS) 2020
 */
 #include <Joystick.h>
 
@@ -18,8 +18,10 @@ Designed for use with Microsoft Flight Simulator 2020
 // LED
 #define pinLED1    19
 
+// Initialize Joystick Object from Library
 Joystick_ Joystick;
 
+// Current and Previous States for each Toggle Switch
 int stateToggle0;
 int stateToggle1;
 int stateToggle2;
@@ -31,6 +33,7 @@ int lastStateToggle2;
 int lastStateToggle3;
 int lastStateToggle4;
 
+// Current and Previous States for Rotary Encoder
 int stateRotaryButton;
 int stateCLK;
 int lastStateRotaryButton;
@@ -59,13 +62,13 @@ void setup() {
   lastStateRotaryButton = digitalRead(pinRotaryButton);
   lastStateCLK     = digitalRead(CLK);
 
-  // Initialize Joystick Library
+  // Start the Joystick (Gamepad) Object
   Joystick.begin();
 }
 
 void loop() {
   
-  // Toggle Switch Logic
+  // Toggle Switch Logic, essentially holds down the button according to the switch position
   stateToggle0 = digitalRead(pinToggle0); //read the state of pin
   if(stateToggle0 != lastStateToggle0) { //if switch is toggled
      Joystick.setButton(0, stateToggle0); // Gamepad Button 1
@@ -88,13 +91,13 @@ void loop() {
   // MFS2020 Requires seperate buttons for Autopilot On/Off in Controls 
   stateToggle4 = digitalRead(pinToggle4);
   if(stateToggle4 != lastStateToggle4) { //if switch has been changed
-    if(stateToggle4 == HIGH) {      // Toggle is ON
+    if(stateToggle4 == HIGH) {      // Toggle is UP
       digitalWrite(pinLED1, HIGH);  // Turn on LED
       Joystick.pressButton(5);      // Gamepad Button 6
       delay(50);                    // Keep the "button" held for brief period
       Joystick.releaseButton(5);
       } 
-    else {                      // Toggle is OFF
+    else {                      // Toggle is DOWN
       digitalWrite(pinLED1, LOW); // Turn off LED
       Joystick.pressButton(4); // Gamepad Button 5
       delay(50);
@@ -117,12 +120,12 @@ void loop() {
     if (digitalRead(DT) != stateCLK) {
       // Positive
       Joystick.pressButton(7); // Gamepad Button 8
-      delay(25);
+      delay(15);
       Joystick.releaseButton(7);
     } else {
       // Negative
       Joystick.pressButton(6); // Gamepad Button 7
-      delay(25);
+      delay(15);
       Joystick.releaseButton(6);
     }
   }
@@ -136,5 +139,5 @@ void loop() {
   lastStateRotaryButton = stateRotaryButton;
   lastStateCLK     = stateCLK;
 
-  delay(10);
+  delay(5);
 }
